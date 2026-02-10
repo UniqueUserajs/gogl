@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	gl "github.com/chsc/gogl/gl21"
-	"github.com/jteeuwen/glfw"
+	"github.com/go-gl/gl/v2.1/gl"
+	"github.com/go-gl/glfw/v3.3/glfw"
 	"image"
 	"image/png"
 	"io"
@@ -19,30 +19,34 @@ const (
 )
 
 var (
-	texture     gl.Uint
-	rotx, roty  gl.Float
-	ambient     []gl.Float  = []gl.Float{0.5, 0.5, 0.5, 1}
-	diffuse     []gl.Float  = []gl.Float{1, 1, 1, 1}
-	lightpos    []gl.Float  = []gl.Float{-5, 5, 10, 0}
+	texture     uint32
+	rotx, roty  float32
+	ambient     []float32  = []float32{0.5, 0.5, 0.5, 1}
+	diffuse     []float32  = []float32{1, 1, 1, 1}
+	lightpos    []float32  = []float32{-5, 5, 10, 0}
 )
 
 func main() {
-	if err := glfw.Init(); err != nil {
-		fmt.Fprintf(os.Stderr, "glfw: %s\n", err)
-		return
+        if err := glfw.Init(); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to initialize glfw: %s", err)
 	}
 	defer glfw.Terminate()
 
-	glfw.OpenWindowHint(glfw.WindowNoResize, 1)
+		glfw.WindowHint(glfw.Resizable, glfw.False)
+	glfw.WindowHint(glfw.ContextVersionMajor, 2)
+	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 
-	if err := glfw.OpenWindow(Width, Height, 0, 0, 0, 0, 16, 0, glfw.Windowed); err != nil {
+        window, err := glfw.CreateWindow(Width, Height, Title, nil /*monitor*/, nil /*share */)
+        if err != nil {
 		fmt.Fprintf(os.Stderr, "glfw: %s\n", err)
 		return
 	}
-	defer glfw.CloseWindow()
+	// defer glfw.CloseWindow()
 
-	glfw.SetSwapInterval(1)
-	glfw.SetWindowTitle(Title)
+	// glfw.SetSwapInterval(1)
+	// glfw.SetWindowTitle(Title)
+
+	window.MakeContextCurrent()
 
 	if err := gl.Init(); err != nil {
 		fmt.Fprintf(os.Stderr, "gl: %s\n", err)
@@ -52,15 +56,18 @@ func main() {
 		fmt.Fprintf(os.Stderr, "init: %s\n", err)
 		return
 	}
+
 	defer destroyScene()
 
-	for glfw.WindowParam(glfw.Opened) == 1 {
+	for !window.ShouldClose() {
+		// Do OpenGL stuff.
 		drawScene()
-		glfw.SwapBuffers()
+		window.SwapBuffers()
+		glfw.PollEvents()
 	}
 }
 
-func createTexture(r io.Reader) (textureId gl.Uint, err error) {
+func createTexture(r io.Reader) (textureId uint32, err error) {
 	img, err := png.Decode(r)
 	if err != nil {
 		return 0, err
@@ -85,12 +92,12 @@ func createTexture(r io.Reader) (textureId gl.Uint, err error) {
 		copy(data[dest:dest+lineLen], rgbaImg.Pix[src:src+rgbaImg.Stride])
 		dest-=lineLen
 	}
-	gl.TexImage2D(gl.TEXTURE_2D, 0, 4, gl.Sizei(imgWidth), gl.Sizei(imgHeight), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Pointer(&data[0]))
+	gl.TexImage2D(gl.TEXTURE_2D, 0, 4, int32(imgWidth), int32(imgHeight), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(&data[0]))
 
 	return textureId, nil
 }
 
-func createTextureFromBytes(data []byte) (gl.Uint, error) {
+func createTextureFromBytes(data []byte) (uint32, error) {
 	r := bytes.NewBuffer(data)
 	return createTexture(r)
 }
