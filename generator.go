@@ -522,6 +522,5 @@ func GLStringArrayFree(strs []*Char) {
 // Add offset to a pointer. Usefull for VertexAttribPointer, TexCoordPointer, NormalPointer, ... 
 func Offset(p Pointer, o uintptr) Pointer {
 	return Pointer(uintptr(p) + o)
-}
-`)
+}`)
 }

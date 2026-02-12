@@ -33,11 +33,11 @@ var testEnumsStr = "###########\n" +
 func checkEnum(cat, en, value string, ecats EnumCategories, t *testing.T) {
 	if enums, ok := ecats[cat]; ok {
 		if e, ok := enums[en]; ok {
-			if e.Value == value {
+			if e == value {
 				t.Logf("Enum found: %v::%v = %v", cat, en, value)
 				return
 			}
-			t.Errorf("Enums not equal: %v: %v != %v", cat, value, e.Value)
+			t.Errorf("Enums not equal: %v: %v != %v", cat, value, e)
 			return
 		}
 		t.Errorf("Enum not found: %v::%v", cat, en)

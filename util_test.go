@@ -7,6 +7,7 @@ package main
 import (
 	"reflect"
 	"testing"
+	"fmt"
 )
 
 type testCategories struct {
@@ -41,11 +42,11 @@ func TestParsedCategory(t *testing.T) {
 		te := &allTestCategories[i]
 		pc, err := ParseCategoryString(te.in)
 		if err != nil {
-			t.Fatalf(err.Error())
+			t.Fatal(err.Error())
 		}
 		t.Logf("%s -> %v", te.in, te.out)
 		if !reflect.DeepEqual(pc, te.out) {
-			t.Errorf("not equal: out = %v", pc)
+			t.Errorf("not equal: out = %s", pc)
 		}
 	}
 }
@@ -54,7 +55,8 @@ func TestGoName(t *testing.T) {
 	for i := range allTestGoName {
 		te := &allTestGoName[i]
 		if GoName(te.in) != te.out {
-			t.Errorf("String conversion failed: %v -> %v", te.in, te.out)
+			msg := fmt.Errorf("String conversion failed: %s %s", te.in, te.out)
+			t.Error(msg)
 		}
 	}
 }

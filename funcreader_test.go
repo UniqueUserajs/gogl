@@ -66,7 +66,7 @@ func TestReadFunctions(t *testing.T) {
 
 	f1 := new(Function)
 	f1.Name = "Foo1"
-	f1.Parameters = []Parameter{{"p1", "type1", false, false}, {"p2", "type2", false, true}}
+	f1.Parameters = []Parameter{{"p1", "type1", false, 0}, {"p2", "type2", false, 1}}
 	f1.Return = "void"
 	f1.Version = Version{1, 0}
 	f1.DeprecatedVersion = Version{0, 0}
@@ -77,7 +77,7 @@ func TestReadFunctions(t *testing.T) {
 
 	f2 := new(Function)
 	f2.Name = "Foo2"
-	f2.Parameters = []Parameter{{"p1", "type3", true, false}, {"p2", "type4", true, true}}
+	f2.Parameters = []Parameter{{"p1", "type3", true, 0}, {"p2", "type4", true, 1}}
 	f2.Return = "void"
 	f2.Version = Version{2, 1}
 	f2.DeprecatedVersion = Version{0, 0}

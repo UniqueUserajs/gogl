@@ -70,7 +70,7 @@ func TestPackageGrouping(t *testing.T) {
 
 	p := GroupEnumsAndFunctions(e, f,
 		func(category string) (packageNames []string) {
-			return GroupPackagesByVendorFunc(category, suppV, deprV)
+			return GroupCategoriesByVendorAndVersion(category, suppV, deprV)
 		})
 
 	for n, pa := range p {

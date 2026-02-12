@@ -74,6 +74,7 @@ func ParseCategoryString(category string) (ParsedCategory, error) {
 // Converts strings with underscores to Go-like names. e.g.: bla_blub_foo -> BlaBlubFoo
 func GoName(n string) string {
 	prev := '_'
+	inupper := false
 	return strings.Map(func(r rune) rune {
 		if r == '_' {
 			prev = r
@@ -81,10 +82,18 @@ func GoName(n string) string {
 		}
 		if prev == '_' {
 			prev = r
+			if unicode.IsUpper(r) {
+				inupper = true
+			}
 			return unicode.ToTitle(r)
 		}
 		prev = r
-		return unicode.ToLower(r)
+		if unicode.IsUpper(r) && inupper {
+			return r
+		} else {
+			inupper = false
+			return unicode.ToLower(r)
+		}
 	},
 		n)
 }
@@ -425,7 +434,6 @@ func CTypeToGoType(cType string, out bool, mod ParamModifier) (goType, cgoType s
 		cgoType = "*C.char"
 		return
 
-	
 	}
 	// standard cases for primitive data types:
 	switch cType {
@@ -478,14 +486,14 @@ func CTypeToGoType(cType string, out bool, mod ParamModifier) (goType, cgoType s
 	case "GLclampd":
 		goType = "Clampd"
 		cgoType = "C.GLclampd"
-	//  
+	//
 	case "GLchar":
 		goType = "Char"
 		cgoType = "C.GLchar"
 	case "GLcharARB":
 		goType = "Char"
 		cgoType = "C.GLcharARB"
-	// 
+	//
 	case "GLintptr":
 		goType = "Intptr"
 		cgoType = "C.GLintptr"
@@ -498,7 +506,7 @@ func CTypeToGoType(cType string, out bool, mod ParamModifier) (goType, cgoType s
 	case "GLsizeiptrARB":
 		goType = "Sizeiptr"
 		cgoType = "C.GLsizeiptrARB"
-	// 
+	//
 	case "GLint64":
 		goType = "Int64"
 		cgoType = "C.GLint64"
